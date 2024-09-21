@@ -11,6 +11,7 @@ import { FirebaseService } from './utils/firebase/firebase.service';
 import { UserModule } from './user/user.module';
 import { UploadModule } from './upload/upload.module';
 import { TradesModule } from './trades/trades.module';
+import { WasteCategoryModule } from './waste-category/waste-category.module';
 import config from 'src/common/configs/config';
 
 @Module({
@@ -24,6 +25,7 @@ import config from 'src/common/configs/config';
     UserModule,
     UploadModule,
     TradesModule,
+    WasteCategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver, FirebaseService],
