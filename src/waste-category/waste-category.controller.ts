@@ -15,7 +15,6 @@ export class WasteCategoryController {
     return this.wasteCategoryService.create(createTradeDto);
   }
 
-  @Auth()
   @Get()
   async findAll(@Query() query: any, @Req() req) {
     const user: User = req.user;

@@ -11,7 +11,7 @@ export class TradesController {
 
   @Auth()
   @Post()
-  create(@Body() createTradeDto: CreateTradeDto,@Query() query: any, @Req() req) {
+  create(@Body() createTradeDto: CreateTradeDto, @Query() query: any, @Req() req) {
     const user: User = req.user;
     createTradeDto.address = user.publicAddress;
     return this.tradesService.create(createTradeDto);

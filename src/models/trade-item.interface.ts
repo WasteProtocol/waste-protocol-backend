@@ -3,7 +3,7 @@ export interface TradeItem {
   tradeId: string;
   wasteItemId: string;
   amount: number;
-  total: number;
+  total?: number;
   createdAt: Date;
   updatedAt: Date;
 }

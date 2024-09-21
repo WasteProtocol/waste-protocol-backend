@@ -1,8 +1,10 @@
-import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 import { PublicService } from './public.service';
 import { WasteCategoryService } from 'src/waste-category/waste-category.service';
 import { WasteItemService } from 'src/waste-item/waste-item.service';
 import { UuidService } from 'src/utils/uuid/uuid.service';
+import { UserService } from 'src/user/user.service';
+import { Auth } from 'src/auth/decorator/auth.decorator';
 
 @Controller('public')
 export class PublicController {
@@ -50,8 +52,17 @@ export class PublicController {
     private readonly publicService: PublicService,
     private readonly wasteCategoryService: WasteCategoryService,
     private readonly wasteItemService: WasteItemService,
-    private readonly uuidService: UuidService
+    private readonly uuidService: UuidService,
+    private readonly userSerivce: UserService,
   ) {}
+
+  @Auth()
+  @Get('users/me')
+  async me(@Req() req: any) {
+    const userId = req.user?.id;
+    const user = await this.userSerivce.getUser(userId);
+    return user;
+  }
 
   // init function create waste-category and waste-item
   @Get('init')

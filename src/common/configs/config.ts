@@ -25,6 +25,20 @@ const config: Config = {
     refreshIn: '7d',
     bcryptSaltOrRound: 10,
   },
+  chains: [
+    {
+      name: 'ethereum',
+      chainId: 1,
+      explorer: 'https://etherscan.io',
+      rpc: 'https://mainnet.infura.io/v3/your-infura-id',
+      ws: 'wss://mainnet.infura.io/ws/v3/your-infura-id',
+      nativeCurrency: {
+        name: 'Ether',
+        symbol: 'ETH',
+        decimals: 18,
+      },
+    },
+  ],
 };
 
 export default (): Config => config;
