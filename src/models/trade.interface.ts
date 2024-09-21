@@ -22,6 +22,7 @@ export interface Trade {
   submittedTx?: string;
   tradeId?: number;
   approvedTx?: string;
+  approvedAt?: Date;
 
   createdAt: Date;
   updatedAt: Date;

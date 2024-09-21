@@ -222,6 +222,7 @@ export class TradesService {
     tradeData.approvedTx = approveTx.hash;
     tradeData.updatedAt = new Date();
     tradeData.status = TradeStatus.Approved;
+    tradeData.approvedAt = new Date();
 
     await update(trades, trade[0].ref.id, tradeData);
 
