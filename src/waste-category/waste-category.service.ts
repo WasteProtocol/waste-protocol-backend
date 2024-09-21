@@ -27,7 +27,7 @@ export class WasteCategoryService {
   }
 
   async findAll(filter: any = {}, filterOrder: any = {}, page = 1, limit = 10) {
-    const wasteCategories = collection<WasteCategory>('wasteCategories');
+    const wasteCategories = collection<WasteCategory>('waste-categories');
 
     const filterConditions = [];
     Object.keys(filter).forEach((key) => {
@@ -63,7 +63,7 @@ export class WasteCategoryService {
   }
 
   async findOne(id: string) {
-    const wasteCategories = collection<WasteCategory>('wasteCategories');
+    const wasteCategories = collection<WasteCategory>('waste-categories');
     const wasteCategory = await get(wasteCategories, id);
     if (!wasteCategory) {
       throw new HttpException(
@@ -85,7 +85,7 @@ export class WasteCategoryService {
       ...updateWasteCategoryDto,
       updatedAt: new Date(),
     };
-    const wasteCategories = collection<WasteCategory>('wasteCategories');
+    const wasteCategories = collection<WasteCategory>('waste-categories');
     const wasteCategory = await get(wasteCategories, id);
     if (!wasteCategory) {
       throw new HttpException(
@@ -104,7 +104,7 @@ export class WasteCategoryService {
   }
 
   async remove(id: string) {
-    const wasteCategories = collection<WasteCategory>('wasteCategories');
+    const wasteCategories = collection<WasteCategory>('waste-categories');
     const wasteCategory = await get(wasteCategories, id);
     if (!wasteCategory) {
       throw new HttpException(
