@@ -5,7 +5,7 @@ import { UpdateWasteCategoryDto } from './dto/update-waste-category.dto';
 import { User } from 'firebase/auth';
 import { Auth } from 'src/auth/decorator/auth.decorator';
 
-@Controller('waste-category')
+@Controller('waste-categories')
 export class WasteCategoryController {
   constructor(private readonly wasteCategoryService: WasteCategoryService) {}
 
