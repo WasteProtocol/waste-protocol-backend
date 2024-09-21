@@ -6,6 +6,10 @@ export class CreateTradeDto {
   @IsString()
   address: string;
 
+  location: string;
+  purpost: string;
+
+  tradeAt: Date;
   items: TradeItem[];
   status: TradeStatus.Pending;
   createdAt: Date;
