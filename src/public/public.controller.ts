@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { Controller, Get, Param, Post, Query, Req } from '@nestjs/common';
 import { PublicService } from './public.service';
 import { WasteCategoryService } from 'src/waste-category/waste-category.service';
@@ -5,6 +6,7 @@ import { WasteItemService } from 'src/waste-item/waste-item.service';
 import { UuidService } from 'src/utils/uuid/uuid.service';
 import { UserService } from 'src/user/user.service';
 import { Auth } from 'src/auth/decorator/auth.decorator';
+// import { SignProtocolService } from 'src/utils/web3/sign-protocol.service';
 
 @Controller('public')
 export class PublicController {
@@ -53,7 +55,7 @@ export class PublicController {
     private readonly wasteCategoryService: WasteCategoryService,
     private readonly wasteItemService: WasteItemService,
     private readonly uuidService: UuidService,
-    private readonly userSerivce: UserService
+    private readonly userSerivce: UserService // private readonly signProtocolService: SignProtocolService,
   ) {}
 
   @Auth()
@@ -105,5 +107,24 @@ export class PublicController {
   @Get('waste-items/:id')
   async getWasteItem(@Param() params: any) {
     return await this.wasteItemService.findOne(params.id);
+  }
+
+  // get total stat from subgraph
+  @Get('stat/total')
+  async getTotalStat() {
+    const result = await this.publicService.getTotalStat();
+    return result[0];
+  }
+
+  // get total stat hour
+  @Get('stat/hour')
+  async getStatByHour() {
+    const result = await this.publicService.getStatByHour();
+    // for each item, convert dayId to timestamp
+    for (let i = 0; i < result.length; i++) {
+      const item = result[i];
+      item.timestamp = item.id * 3600;
+    }
+    return result;
   }
 }

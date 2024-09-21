@@ -4,10 +4,15 @@ export interface Config {
   swagger: SwaggerConfig;
   graphql: GraphqlConfig;
   security: SecurityConfig;
+  graphProtocol: GraphProtocolConfig;
 }
 
 export interface NestConfig {
   port: number;
+}
+
+export interface GraphProtocolConfig {
+  endpoint: string;
 }
 
 export interface CorsConfig {

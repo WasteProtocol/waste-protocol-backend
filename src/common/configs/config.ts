@@ -25,6 +25,9 @@ const config: Config = {
     refreshIn: '7d',
     bcryptSaltOrRound: 10,
   },
+  graphProtocol: {
+    endpoint: 'https://api.studio.thegraph.com/query/3561/ethglobal2024-waste-protocol/version/latest',
+  },
 };
 
 export default (): Config => config;
