@@ -5,7 +5,7 @@ import { User } from 'firebase/auth';
 import { CreateWasteItemDto } from './dto/create-waste-item.dto';
 import { UpdateWasteItemDto } from './dto/update-waste-item.dto';
 
-@Controller('waste-item')
+@Controller('waste-items')
 export class WasteItemController {
   constructor(private readonly wasteItemService: WasteItemService) {}
 
