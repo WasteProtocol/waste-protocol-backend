@@ -11,7 +11,10 @@ export class WasteCategoryService {
   constructor(private readonly paginationService: PaginationService, private readonly uuidService: UuidService) {}
   async create(createWasteCategoryDto: CreateWasteCategoryDto) {
     const wasteCategories = collection<WasteCategory>('waste-categories');
-    const id = await this.uuidService.generateUuid();
+    let id = createWasteCategoryDto.id;
+    if (!id) {
+      id = await this.uuidService.generateUuid();
+    }
     const data = {
       ...createWasteCategoryDto,
       id,
@@ -23,7 +26,7 @@ export class WasteCategoryService {
     return wasteCategory.data;
   }
 
-  async findAll(filter: any, filterOrder: any, page: number, limit: number) {
+  async findAll(filter: any = {}, filterOrder: any = {}, page = 1, limit = 10) {
     const wasteCategories = collection<WasteCategory>('wasteCategories');
 
     const filterConditions = [];

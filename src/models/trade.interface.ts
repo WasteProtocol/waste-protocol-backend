@@ -1,4 +1,5 @@
 import { TradeItem } from './trade-item.interface';
+import { TradeStatus } from './trade-status.enum'; // Adjust the import path as necessary
 
 export interface Trade {
   id: string;
@@ -9,6 +10,8 @@ export interface Trade {
   settled?: boolean;
 
   items: TradeItem[];
+
+  status: TradeStatus;
 
   totalTokenReceived?: number;
   totalUSDCReceived?: number;

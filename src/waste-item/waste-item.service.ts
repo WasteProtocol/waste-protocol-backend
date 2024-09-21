@@ -11,7 +11,10 @@ export class WasteItemService {
   constructor(private readonly paginationService: PaginationService, private readonly uuidService: UuidService) {}
   async create(createWasteItemDto: CreateWasteItemDto) {
     const wasteItems = collection<WasteItem>('waste-items');
-    const id = await this.uuidService.generateUuid();
+    let id = createWasteItemDto.id;
+    if (!id) {
+      id = await this.uuidService.generateUuid();
+    }
     const data = {
       ...createWasteItemDto,
       id,
@@ -24,7 +27,7 @@ export class WasteItemService {
   }
 
   async findAll(filter: any, filterOrder: any, page: number, limit: number) {
-    const wasteItems = collection<WasteItem>('wasteItems');
+    const wasteItems = collection<WasteItem>('waste-items');
 
     const filterConditions = [];
     Object.keys(filter).forEach((key) => {
@@ -38,6 +41,7 @@ export class WasteItemService {
     Logger.debug(`filterConditions == %o`, filterConditions);
     const queryWasteItem = await query(wasteItems, filterConditions);
 
+    // Logger.debug(`queryWasteItem == %o`, queryWasteItem);
     const datas = [];
     for (const doc of queryWasteItem) {
       const u = doc.data;
@@ -60,7 +64,7 @@ export class WasteItemService {
   }
 
   async findOne(id: string) {
-    const wasteItems = collection<WasteItem>('wasteItems');
+    const wasteItems = collection<WasteItem>('waste-items');
     const wasteItem = await get(wasteItems, id);
     if (!wasteItem) {
       throw new HttpException(
@@ -82,7 +86,7 @@ export class WasteItemService {
       ...updateWasteItemDto,
       updatedAt: new Date(),
     };
-    const wasteItems = collection<WasteItem>('wasteItems');
+    const wasteItems = collection<WasteItem>('waste-items');
     const wasteItem = await get(wasteItems, id);
     if (!wasteItem) {
       throw new HttpException(
@@ -101,7 +105,7 @@ export class WasteItemService {
   }
 
   async remove(id: string) {
-    const wasteItems = collection<WasteItem>('wasteItems');
+    const wasteItems = collection<WasteItem>('waste-items');
     const wasteItem = await get(wasteItems, id);
     if (!wasteItem) {
       throw new HttpException(
