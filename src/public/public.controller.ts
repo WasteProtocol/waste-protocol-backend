@@ -16,7 +16,7 @@ export class PublicController {
       id: 'f731c55b-7d66-4e37-8194-c784b22cfe95',
       name: 'paper',
       emissionRate: 3.54, // gCO2e/g
-    }
+    },
   ];
 
   mockWasteItem = [
@@ -50,7 +50,7 @@ export class PublicController {
     private readonly publicService: PublicService,
     private readonly wasteCategoryService: WasteCategoryService,
     private readonly wasteItemService: WasteItemService,
-    private readonly uuidService: UuidService,
+    private readonly uuidService: UuidService
   ) {}
 
   // init function create waste-category and waste-item
@@ -86,7 +86,8 @@ export class PublicController {
   // get all waste items
   @Get('waste-items')
   async getWasteItems() {
-    return await this.wasteItemService.findAll({}, {}, 1, 10);
+    const result = await this.wasteItemService.findAll({}, {}, 1, 10);
+    return result.results;
   }
 
   // get waste item by id
