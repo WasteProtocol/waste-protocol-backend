@@ -121,4 +121,16 @@ export class WasteItemService {
     await remove(wasteItems, id);
     return true;
   }
+
+  // get all waste items
+  async getAllWasteItems(): Promise<WasteItem[]> {
+    const wasteItems = collection<WasteItem>('waste-items');
+    const wasteItemsData = await query(wasteItems, []);
+    const result = [];
+    for (const doc of wasteItemsData) {
+      const u = doc.data;
+      result.push(u);
+    }
+    return result;
+  }
 }

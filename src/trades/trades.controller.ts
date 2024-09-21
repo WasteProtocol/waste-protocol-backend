@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req, Logger } from '@nestjs/common';
 import { TradesService } from './trades.service';
 import { CreateTradeDto } from './dto/create-trade.dto';
 import { UpdateTradeDto } from './dto/update-trade.dto';
@@ -11,7 +11,8 @@ export class TradesController {
 
   @Auth()
   @Post()
-  create(@Body() createTradeDto: CreateTradeDto, @Query() query: any, @Req() req) {
+  create(@Body() createTradeDto: CreateTradeDto, @Req() req) {
+    Logger.debug(`createTradeDto == %o`, createTradeDto);
     const user: User = req.user;
     createTradeDto.address = user.publicAddress;
     return this.tradesService.create(createTradeDto);
@@ -53,5 +54,12 @@ export class TradesController {
   async remove(@Param('id') id: string) {
     await this.tradesService.remove(id);
     return { code: 200, message: 'user deleted' };
+  }
+
+  // approve trade
+  @Get('approve/:id')
+  async approveTrade(@Param('id') id: string) {
+    const trade = await this.tradesService.approveTrade(+id);
+    return trade;
   }
 }

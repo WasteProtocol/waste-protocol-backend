@@ -120,4 +120,16 @@ export class WasteCategoryService {
     await remove(wasteCategories, id);
     return true;
   }
+
+  // get all waste categories
+  async getWasteCategories(): Promise<WasteCategory[]> {
+    const wasteCategories = collection<WasteCategory>('waste-categories');
+    const wasteCategory = await query(wasteCategories, []);
+    const datas = [];
+    for (const doc of wasteCategory) {
+      const u = doc.data;
+      datas.push(u);
+    }
+    return datas;
+  }
 }

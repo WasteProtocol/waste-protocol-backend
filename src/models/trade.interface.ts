@@ -12,10 +12,16 @@ export interface Trade {
   items: TradeItem[];
 
   status: TradeStatus;
+  locaton?: string;
+  purpose?: string;
 
   totalTokenReceived?: number;
   totalUSDCReceived?: number;
   totalEmissionAmount?: number;
+
+  submittedTx?: string;
+  tradeId?: number;
+  approvedTx?: string;
 
   createdAt: Date;
   updatedAt: Date;

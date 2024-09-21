@@ -53,7 +53,7 @@ export class PublicController {
     private readonly wasteCategoryService: WasteCategoryService,
     private readonly wasteItemService: WasteItemService,
     private readonly uuidService: UuidService,
-    private readonly userSerivce: UserService,
+    private readonly userSerivce: UserService
   ) {}
 
   @Auth()

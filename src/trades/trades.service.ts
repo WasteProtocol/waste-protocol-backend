@@ -5,22 +5,102 @@ import { PaginationService } from 'src/utils/pagination/pagination.service';
 import { UuidService } from 'src/utils/uuid/uuid.service';
 import { Trade } from 'src/models/trade.interface';
 import { collection, set, get, query, where, update, remove } from 'typesaurus';
+import { TradeStatus } from 'src/models/trade-status.enum';
+import { WasteCategoryService } from 'src/waste-category/waste-category.service';
+import { WasteItemService } from 'src/waste-item/waste-item.service';
+import { WasteSattlementService } from 'src/utils/web3/waste-sattlement.service';
 
 @Injectable()
 export class TradesService {
-  constructor(private readonly paginationService: PaginationService, private readonly uuidService: UuidService) {}
+  constructor(
+    private readonly paginationService: PaginationService,
+    private readonly uuidService: UuidService,
+    private readonly WasteCategoryService: WasteCategoryService,
+    private readonly wasteItemService: WasteItemService,
+    private readonly wasteSattlementService: WasteSattlementService
+  ) {}
   async create(createTradeDto: CreateTradeDto) {
     const trades = collection<Trade>('trades');
     const id = await this.uuidService.generateUuid();
+    createTradeDto.status = TradeStatus.Pending;
+    const calculatedValues = await this.calculateTotalEmissionAndTotalTokenReceived(createTradeDto);
     const data = {
       ...createTradeDto,
       id,
+      totalTokenReceived: calculatedValues.totalTokenReceived,
+      totalUSDCReceived: calculatedValues.totalUSDCReceived,
+      totalEmissionAmount: calculatedValues.totalEmissionAmount,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    await set(trades, id, data);
-    const trade = await get(trades, id);
-    return trade.data;
+
+    try {
+      // call the blockchain to submitWasteTrade
+      const submitTx = await this.wasteSattlementService.submitWasteTrade(
+        createTradeDto.address,
+        createTradeDto.items.map((item) => item.wasteItemId),
+        createTradeDto.items.map((item) => item.amount)
+      );
+
+      const receipt = await submitTx.wait();
+      Logger.debug(`receipt == %o`, receipt);
+
+      // filter event TradeSubmitted
+      const event = receipt.events.find((event) => event.event === 'TradeSubmitted');
+
+      // get the tradeId from the event
+      const tradeId = event.args[0].toNumber();
+
+      data.tradeId = tradeId;
+
+      data.submittedTx = submitTx.hash;
+
+      await set(trades, id, data);
+      const trade = await get(trades, id);
+
+      return {
+        trade: trade.data,
+        message: 'Trade created successfully',
+        tx: submitTx,
+        tradeId,
+      };
+    } catch (error) {
+      Logger.error(`Error submitting trade to blockchain: %o`, error);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          errors: {
+            message: 'Error submitting trade to blockchain',
+          },
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  // calculate total emission and total token received
+  async calculateTotalEmissionAndTotalTokenReceived(trade: CreateTradeDto) {
+    let totalEmissionAmount = 0;
+    let totalTokenReceived = 0;
+    let totalUSDCReceived = 0;
+    const tradeCategories = await this.WasteCategoryService.getWasteCategories();
+    Logger.debug(`tradeCategories == %o`, tradeCategories);
+    const wasteItems = await this.wasteItemService.getAllWasteItems();
+    Logger.debug(`wasteItems == %o`, wasteItems);
+
+    for (const item of trade.items) {
+      const wasteItem = wasteItems.find((wasteItem) => wasteItem.id === item.wasteItemId);
+      const wasteCategory = tradeCategories.find((category) => category.id === wasteItem.categoryId);
+      totalEmissionAmount += wasteCategory.emissionRate * item.amount;
+      totalTokenReceived += wasteCategory.emissionRate * item.amount;
+      totalUSDCReceived += item.amount * wasteItem.price; // 0.1 is the price per gram
+    }
+
+    return {
+      totalEmissionAmount,
+      totalTokenReceived,
+      totalUSDCReceived,
+    };
   }
 
   async findAll(filter: any, filterOrder: any, page: number, limit: number) {
@@ -116,5 +196,35 @@ export class TradesService {
     }
     await remove(trades, id);
     return true;
+  }
+
+  // approve trade by tradeId
+  async approveTrade(tradeId: number) {
+    const trades = collection<Trade>('trades');
+    const trade = await query(trades, [where('tradeId', '==', tradeId)]);
+    if (trade.length === 0) {
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          errors: {
+            message: 'Trade not found',
+          },
+        },
+        HttpStatus.CONFLICT
+      );
+    }
+
+    // call the blockchain to approveTrade
+    const approveTx = await this.wasteSattlementService.approveTrade(tradeId);
+
+    const tradeData = trade[0].data;
+    tradeData.approved = true;
+    tradeData.approvedTx = approveTx.hash;
+    tradeData.updatedAt = new Date();
+    tradeData.status = TradeStatus.Approved;
+
+    await update(trades, trade[0].ref.id, tradeData);
+
+    return tradeData;
   }
 }

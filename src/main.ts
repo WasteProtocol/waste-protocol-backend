@@ -41,13 +41,13 @@ export const createNestServer = async (expressInstance: express.Express) => {
   const adapter = new ExpressAdapter(expressInstance);
   const app = await NestFactory.create<NestExpressApplication>(AppModule, adapter, {});
   // Validation
-  app.useGlobalPipes(
+  /* app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       whitelist: true,
       forbidNonWhitelisted: true,
     })
-  );
+  );*/
 
   const configService = app.get(ConfigService);
   const nestConfig = configService.get<NestConfig>('nest');
@@ -68,6 +68,7 @@ export const createNestServer = async (expressInstance: express.Express) => {
   return app.init();
 };
 createNestServer(server)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   .then((v) => Logger.log('Nest Ready'))
   .catch((err) => Logger.error('Nest broken', err));
 // locate all functions closest to users

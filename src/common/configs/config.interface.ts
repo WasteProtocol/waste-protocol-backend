@@ -4,21 +4,6 @@ export interface Config {
   swagger: SwaggerConfig;
   graphql: GraphqlConfig;
   security: SecurityConfig;
-  chains: ChainConfig[];
-}
-
-export interface ChainConfig {
-  name: string;
-  network?: string;
-  chainId: number;
-  explorer: string;
-  rpc: string;
-  ws: string;
-  nativeCurrency: {
-    name: string;
-    symbol: string;
-    decimals: number;
-  };
 }
 
 export interface NestConfig {
