@@ -3,15 +3,16 @@ import { TradeItem } from './trade-item.interface';
 export interface Trade {
   id: string;
   address: string;
-  approved: boolean;
-  rejected: boolean;
-  settled: boolean;
+  approved?: boolean;
+  approver?: string;
+  rejected?: boolean;
+  settled?: boolean;
 
   items: TradeItem[];
 
-  totalTokenReceived: number;
-  totalUSDCReceived: number;
-  totalEmissionAmount: number;
+  totalTokenReceived?: number;
+  totalUSDCReceived?: number;
+  totalEmissionAmount?: number;
 
   createdAt: Date;
   updatedAt: Date;

@@ -10,6 +10,7 @@ import { GqlConfigService } from './gql-config.service';
 import { FirebaseService } from './utils/firebase/firebase.service';
 import { UserModule } from './user/user.module';
 import { UploadModule } from './upload/upload.module';
+import { TradesModule } from './trades/trades.module';
 import config from 'src/common/configs/config';
 
 @Module({
@@ -22,6 +23,7 @@ import config from 'src/common/configs/config';
     AuthModule,
     UserModule,
     UploadModule,
+    TradesModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver, FirebaseService],
