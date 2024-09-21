@@ -12,6 +12,7 @@ import { UserModule } from './user/user.module';
 import { UploadModule } from './upload/upload.module';
 import { TradesModule } from './trades/trades.module';
 import { WasteCategoryModule } from './waste-category/waste-category.module';
+import { WasteItemModule } from './waste-item/waste-item.module';
 import config from 'src/common/configs/config';
 
 @Module({
@@ -26,6 +27,7 @@ import config from 'src/common/configs/config';
     UploadModule,
     TradesModule,
     WasteCategoryModule,
+    WasteItemModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver, FirebaseService],
