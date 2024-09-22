@@ -6,18 +6,21 @@ import { UuidService } from 'src/utils/uuid/uuid.service';
 import { Trade } from 'src/models/trade.interface';
 import { collection, set, get, query, where, update, remove } from 'typesaurus';
 import { TradeStatus } from 'src/models/trade-status.enum';
-import { WasteCategoryService } from 'src/waste-category/waste-category.service';
 import { WasteItemService } from 'src/waste-item/waste-item.service';
 import { WasteSattlementService } from 'src/utils/web3/waste-sattlement.service';
+import { SignProtocolService } from 'src/utils/web3/sign-protocol.service';
+import { Attestation } from 'src/models/attestation.interface';
+import { WasteCategoryService } from 'src/waste-category/waste-category.service';
 
 @Injectable()
 export class TradesService {
   constructor(
     private readonly paginationService: PaginationService,
     private readonly uuidService: UuidService,
-    private readonly WasteCategoryService: WasteCategoryService,
+    private readonly wasteCategoryService: WasteCategoryService,
     private readonly wasteItemService: WasteItemService,
-    private readonly wasteSattlementService: WasteSattlementService
+    private readonly wasteSattlementService: WasteSattlementService,
+    private readonly signProtocolService: SignProtocolService
   ) {}
   async create(createTradeDto: CreateTradeDto) {
     const trades = collection<Trade>('trades');
@@ -83,7 +86,7 @@ export class TradesService {
     let totalEmissionAmount = 0;
     let totalTokenReceived = 0;
     let totalUSDCReceived = 0;
-    const tradeCategories = await this.WasteCategoryService.getWasteCategories();
+    const tradeCategories = await this.wasteCategoryService.getWasteCategories();
     Logger.debug(`tradeCategories == %o`, tradeCategories);
     const wasteItems = await this.wasteItemService.getAllWasteItems();
     Logger.debug(`wasteItems == %o`, wasteItems);
@@ -227,5 +230,44 @@ export class TradesService {
     await update(trades, trade[0].ref.id, tradeData);
 
     return tradeData;
+  }
+
+  // issue attestation by id
+  async issueAttestation(id: string) {
+    const trades = collection<Trade>('trades');
+    const trade = await get(trades, id);
+    if (!trade) {
+      throw new HttpException(
+        {
+          status: HttpStatus.CONFLICT,
+          errors: {
+            message: 'Trade not found',
+          },
+        },
+        HttpStatus.CONFLICT
+      );
+    }
+    // convert trade to Attestation
+    const data = trade.data;
+    const attestation: Attestation = {
+      id: data.id,
+      address: data.address,
+      approver: data.approver,
+      wasteTypeIds: data.items.map((item) => item.wasteItemId),
+      amounts: data.items.map((item) => item.amount.toString()),
+      status: data.status,
+      totalTokenReceived: data.totalTokenReceived,
+      totalUSDCReceived: data.totalUSDCReceived,
+      totalEmissionAmount: data.totalEmissionAmount,
+      submittedTx: data.submittedTx,
+      approvedTx: data.approvedTx,
+      tradeId: data.tradeId,
+      approvedAt: data.approvedAt.getTime(),
+      tradedAt: data.createdAt.getTime(),
+    };
+
+    // call the blockchain to issueAttestation
+    const issueAttestationTx = await this.signProtocolService.issueAttestation(attestation);
+    Logger.debug(`issueAttestationTx == %o`, issueAttestationTx);
   }
 }

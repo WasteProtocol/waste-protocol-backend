@@ -62,4 +62,10 @@ export class TradesController {
     const trade = await this.tradesService.approveTrade(+id);
     return trade;
   }
+
+  @Get('issue-attestation/:id')
+  async issueAttestation(@Param('id') id: string) {
+    const trade = await this.tradesService.issueAttestation(id);
+    return trade;
+  }
 }

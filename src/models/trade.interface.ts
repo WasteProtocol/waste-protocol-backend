@@ -24,6 +24,8 @@ export interface Trade {
   approvedTx?: string;
   approvedAt?: Date;
 
+  attestationId?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }

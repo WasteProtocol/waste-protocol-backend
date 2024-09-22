@@ -127,4 +127,10 @@ export class PublicController {
     }
     return result;
   }
+
+  @Get('stat/items')
+  async getStatByItems() {
+    const result = await this.publicService.getStatByItems();
+    return result;
+  }
 }
